@@ -2,6 +2,7 @@
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 int currentMenu = 1;
+double freqChoice = 1;
 
 const int increaseButtonPin = 2;
 const int decreaseButtonPin = 3; 
@@ -129,4 +130,44 @@ void noMode() {
  lcd.setCursor(0, 1);
  lcd.print("Mode N/A.");
  delay(500);
+}
+
+void dipoleCalc();
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Dipole");
+  lcd.setCursor(0, 1);
+  lcd.print("Calculator");
+  delay(500);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Enter");
+  lcd.setCursor(0, 1);
+  lcd.print("Frequency");
+  
+  while (digitalRead(setButtonPin) == LOW) {
+   if (digitalRead(increaseButtonPin) == HIGH) {
+     freqChoice += 0.1;
+     if (freqChoice > 54) {
+       freqChoice = 0.1;
+     }
+     displayFreq();
+     delay(100);
+   } else if (digitalRead(decreaseButtonPin) == HIGH) {
+     freqChoice -= 0.1;
+     if (freqChoice < 1) {
+       freqChoice = 54;
+     }
+     
+     delay(100);
+   }
+ }
+}
+
+displayFreq() {
+  lcd.clear();
+     lcd.setCursor(0, 0);
+     lcd.print("Freq: ");
+     lcd.print(freqChoice);
+     lcd.print(" MHz");
 }
