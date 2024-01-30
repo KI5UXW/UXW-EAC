@@ -2,7 +2,10 @@
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 int currentMenu = 1;
-double freqChoice = 1;
+float freqChoice = 14;
+float antennaLength = 0;
+float powerInput = 100;
+
 
 const int increaseButtonPin = 2;
 const int decreaseButtonPin = 3; 
@@ -30,21 +33,21 @@ void loop() {
  if (currentMenu == 1){
    lcd.clear();
    lcd.setCursor(0, 0);
-   lcd.print("A: FoM   0: CXC");
+   lcd.print("A: N/A   0: N/A");
    lcd.setCursor(0, 1);
-   lcd.print("V: AWG   O: NXT");
+   lcd.print("V: PWR   O: NXT");
  } else if (currentMenu == 2) {
    lcd.clear();
    lcd.setCursor(0, 0);
-   lcd.print("A: DIP   0: QWG");
+   lcd.print("A: DIP   0: INV");
    lcd.setCursor(0, 1);
-   lcd.print("V: QWV   O: NXT");
+   lcd.print("V: 9:1   O: NXT");
  } else if (currentMenu == 3) {
    lcd.clear();
    lcd.setCursor(0, 0);
-   lcd.print("A: N/A   0: 9:1 ");
+   lcd.print("A: JPL   0: N/A");
    lcd.setCursor(0, 1);int numGroups = 5;
-   lcd.print("V: JPL   O: NXT");
+   lcd.print("V: N/A   O: NXT");
  } else if (currentMenu == 4) {
    lcd.clear();
    lcd.setCursor(0, 0);
@@ -78,7 +81,7 @@ void loop() {
    }
  } else if (currentMenu == 2) {
    if (digitalRead(increaseButtonPin) == HIGH) {
-     noMode();
+     dipoleCalc();
    } else if (digitalRead(decreaseButtonPin) == HIGH) {
      noMode();
    } else if (digitalRead(setButtonPin) == HIGH) {
@@ -132,6 +135,29 @@ void noMode() {
  delay(500);
 }
 
+void setFreq() {
+  while (digitalRead(setButtonPin) == LOW) {
+   if (digitalRead(increaseButtonPin) == HIGH) {
+     freqChoice += 0.1;
+     if (freqChoice > 54) {
+       freqChoice = 0.1;
+     }
+     displayFreq();
+     delay(100);
+   } else if (digitalRead(decreaseButtonPin) == HIGH) {
+     freqChoice -= 0.1;
+     if (freqChoice < 0.1) {
+       freqChoice = 54;
+     }
+     
+     delay(100);
+   }
+}
+
+void showLength(){
+  
+}
+ 
 void dipoleCalc();
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -144,30 +170,33 @@ void dipoleCalc();
   lcd.print("Enter");
   lcd.setCursor(0, 1);
   lcd.print("Frequency");
+
+  setFreq();
   
-  while (digitalRead(setButtonPin) == LOW) {
-   if (digitalRead(increaseButtonPin) == HIGH) {
-     freqChoice += 0.1;
-     if (freqChoice > 54) {
-       freqChoice = 0.1;
-     }
-     displayFreq();
-     delay(100);
-   } else if (digitalRead(decreaseButtonPin) == HIGH) {
-     freqChoice -= 0.1;
-     if (freqChoice < 1) {
-       freqChoice = 54;
-     }
-     
-     delay(100);
+   antennaLength = (467 / freqChoice);
+   antennaLength = round(10 * antennaLength) / 10;
+   lcd.clear();
+   lcd.setCursor(0, 0);
+   lcd.print("Dipole for");
+   lcd.setCursor(0, 1);
+   lcd.print(freqChoice);
+   lcd.print(" MHz.");
+   delay(500);
+   lcd.clear();
+   lcd.setCursor(0, 0);
+   lcd.print("Wire Length:");
+   lcd.setCursor(0, 1);
+   lcd.print(antennaLength);
+   lcd.print("'");
+   while (digitalRead(setButtonPin) == LOW) {
+     delay(10);
    }
- }
 }
 
 displayFreq() {
   lcd.clear();
-     lcd.setCursor(0, 0);
-     lcd.print("Freq: ");
-     lcd.print(freqChoice);
-     lcd.print(" MHz");
+  lcd.setCursor(0, 0);
+  lcd.print("Freq: ");
+  lcd.print(freqChoice);
+  lcd.print(" MHz");
 }
