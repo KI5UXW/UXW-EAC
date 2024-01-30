@@ -5,6 +5,7 @@ int currentMenu = 1;
 float freqChoice = 14;
 float antennaLength = 0;
 float powerInput = 100;
+float wireAWG = 30;
 
 
 const int increaseButtonPin = 2;
@@ -33,7 +34,7 @@ void loop() {
  if (currentMenu == 1){
    lcd.clear();
    lcd.setCursor(0, 0);
-   lcd.print("A: N/A   0: N/A");
+   lcd.print("A: AWG   0: N/A");
    lcd.setCursor(0, 1);
    lcd.print("V: PWR   O: NXT");
  } else if (currentMenu == 2) {
@@ -149,13 +150,37 @@ void setFreq() {
      if (freqChoice < 0.1) {
        freqChoice = 54;
      }
-     
+     displayFreq();
      delay(100);
    }
 }
 
-void showLength(){
-  
+void setAWG() {
+  while (digitalRead(setButtonPin) == LOW) {
+   if (digitalRead(increaseButtonPin) == HIGH) {
+     freqChoice -= 1;
+     if (freqChoice < 1) {
+       freqChoice = 30;
+     }
+     displayAWG();
+     delay(100);
+   } else if (digitalRead(decreaseButtonPin) == HIGH) {
+     freqChoice += 1;
+     if (freqChoice > 30) {
+       freqChoice = 1;
+     }
+     displayAWG();
+     delay(100);
+   }
+}
+
+void showLength() {
+   lcd.clear();
+   lcd.setCursor(0, 0);
+   lcd.print("Wire Length:");
+   lcd.setCursor(0, 1);
+   lcd.print(antennaLength);
+   lcd.print("'");
 }
  
 void dipoleCalc();
@@ -182,12 +207,7 @@ void dipoleCalc();
    lcd.print(freqChoice);
    lcd.print(" MHz.");
    delay(500);
-   lcd.clear();
-   lcd.setCursor(0, 0);
-   lcd.print("Wire Length:");
-   lcd.setCursor(0, 1);
-   lcd.print(antennaLength);
-   lcd.print("'");
+   showLength();
    while (digitalRead(setButtonPin) == LOW) {
      delay(10);
    }
@@ -199,4 +219,11 @@ displayFreq() {
   lcd.print("Freq: ");
   lcd.print(freqChoice);
   lcd.print(" MHz");
+}
+
+displayAWG() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("AWG ");
+  lcd.print(wireAWG);
 }
