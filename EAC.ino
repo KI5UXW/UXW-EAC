@@ -5,8 +5,8 @@ int currentMenu = 1;
 float freqChoice = 14;
 float antennaLength = 0;
 float powerInput = 100;
-float wireAWG = 30;
-
+float chartOfAWG[30] = {324.9 ,289.3, 257.6, 229.4, 204.3, 181.9, 162, 144.3, 128.5, 114.4, 101.9, 90.7, 80.8, 72, 64.1, 57.1, 50.8, 45.3, 40.3, 35.9, 32, 28.5, 25.3, 22.6, 20.1, 17.9, 15.9, 14.2, 12.6, 11.3, 10}; //Added the AWG 1/10 as the value of 0 here in this array. Data from https://www.lapptannehill.com/resources/technical-information/solid-conductor-awg-dimensions-chart.
+float wireAWG = chartOfAWG[30];
 
 const int increaseButtonPin = 2;
 const int decreaseButtonPin = 3; 
