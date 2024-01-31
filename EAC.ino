@@ -5,13 +5,16 @@ int currentMenu = 1;
 
 //Universal Variables
 float chartOfAWG[30] = {324.9 ,289.3, 257.6, 229.4, 204.3, 181.9, 162, 144.3, 128.5, 114.4, 101.9, 90.7, 80.8, 72, 64.1, 57.1, 50.8, 45.3, 40.3, 35.9, 32, 28.5, 25.3, 22.6, 20.1, 17.9, 15.9, 14.2, 12.6, 11.3, 10}; //Added the AWG 1/10 as the value of 0 here in this array. Data from https://www.lapptannehill.com/resources/technical-information/solid-conductor-awg-dimensions-chart.
-float wireAWG = chartOfAWG[30];
+float wireAWG = 30;
+float wireDiameter= (chartOfAWG[30] / 1000);
 float inputPower = 100; // Measured in Watts.
 float freqChoice = 14;
 float antennaLength = 0;
+float universalCounter = 0;
 
 //Magnetic Loop Antenna Variables
 float loopDiameter = 0;
+float conductorDiameter = 0;
 float magloopVoltage = 0; // Voltage across the capacitor during TX.
 float radiationResistance = 0; // Measured in Ohms.
 float efficiency = 0; // Measured in decimal: 0.0 = 0% and 1.0 = 100%
@@ -48,7 +51,7 @@ void loop() {
  if (currentMenu == 1){
    lcd.clear();
    lcd.setCursor(0, 0);
-   lcd.print("A: AWG   0: N/A");
+   lcd.print("A: AWG   0: FRQ");
    lcd.setCursor(0, 1);
    lcd.print("V: PWR   O: NXT");
  } else if (currentMenu == 2) {
@@ -172,20 +175,29 @@ void setFreq() {
 void setAWG() {
   while (digitalRead(setButtonPin) == LOW) {
    if (digitalRead(increaseButtonPin) == HIGH) {
-     freqChoice -= 1;
-     if (freqChoice < 1) {
-       freqChoice = 30;
+     wireAWG -= 1;
+     if (wireAWG < 1) {
+       wireAWG = 30;
      }
      displayAWG();
      delay(100);
    } else if (digitalRead(decreaseButtonPin) == HIGH) {
-     freqChoice += 1;
-     if (freqChoice > 30) {
-       freqChoice = 1;
+     wireAWG += 1;
+     if (wireAWG > 30) {
+       wireAWG = 1;
      }
      displayAWG();
      delay(100);
    }
+   wireDiameter = (chartOfAWG[wireAWG] / 1000)
+   lcd.clear();
+   lcd.setCursor(0, 0);
+   lcd.print("You've chosen AWG ");
+   lcd.print(wireAWG);
+   lcd.setCursor(0, 1);
+   lcd.print(wireDiameter);
+   lcd.print("'")
+   delay(500);
 }
 
 void showLength() {
@@ -197,7 +209,7 @@ void showLength() {
    lcd.print("'");
 }
  
-void dipoleCalc();
+void dipoleCalc() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Dipole");
@@ -212,22 +224,26 @@ void dipoleCalc();
 
   setFreq();
   
-   antennaLength = (467 / freqChoice);
-   antennaLength = round(10 * antennaLength) / 10;
-   lcd.clear();
-   lcd.setCursor(0, 0);
-   lcd.print("Dipole for");
-   lcd.setCursor(0, 1);
-   lcd.print(freqChoice);
-   lcd.print(" MHz.");
-   delay(500);
-   showLength();
-   while (digitalRead(setButtonPin) == LOW) {
-     delay(10);
-   }
+  antennaLength = (467 / freqChoice);
+  antennaLength = round(10 * antennaLength) / 10;
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Dipole for");
+  lcd.setCursor(0, 1);
+  lcd.print(freqChoice);
+  lcd.print(" MHz.");
+  delay(500);
+  showLength();
+  while (digitalRead(setButtonPin) == LOW) {
+    delay(10);
+  }
 }
 
-displayFreq() {
+void magloopCalc() {
+
+}
+
+void displayFreq() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Freq: ");
@@ -235,7 +251,7 @@ displayFreq() {
   lcd.print(" MHz");
 }
 
-displayAWG() {
+void displayAWG() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("AWG ");
