@@ -6,7 +6,7 @@ int currentMenu = 1;
 //Universal Variables
 float chartOfAWG[30] = {324.9 ,289.3, 257.6, 229.4, 204.3, 181.9, 162, 144.3, 128.5, 114.4, 101.9, 90.7, 80.8, 72, 64.1, 57.1, 50.8, 45.3, 40.3, 35.9, 32, 28.5, 25.3, 22.6, 20.1, 17.9, 15.9, 14.2, 12.6, 11.3, 10}; //Added the AWG 1/10 as the value of 0 here in this array. Data from https://www.lapptannehill.com/resources/technical-information/solid-conductor-awg-dimensions-chart.
 float wireAWG = 30;
-float wireDiameter= (chartOfAWG[30] / 1000); //Measured in Inches.
+float wireDiameter= (chartOfAWG[wireAWG] / 1000); //Measured in Inches.
 string coaxTypes[93] = {"RG-4/U", "RG-5/U", "RG-5A/B/U", "RG-6/U", "RG-6A/U", "RG-8/U", "9914/U", "RG-8A/U", "RG-8X/U", "RG-9/U", "RG-9A/U", "RG-9B/U", "RG-10/U", "RG-10A/U", "RG-11/U", "RG-11A/U", "RG-12/U", "RG-12A/U", "RG-17A/U", "RG-17A/U", "RG-22/U", "RG-22A/B/U", "RG-23/A/U", "RG-24/A/U", "RG-34/U", "RG-34A/U", "RG-35/U", "RG-35A/B/U", "RG-55B/U", "RG-58/U", "RG-58A/U", "RG-58B/U", "RG-58C/U", "RG-59/A/U", "RG-59B/U", "RG-62/A/B/U", "RG-63/A/B/U", "RG-65/A/U", "RG-71/A/B/U", "RG-79/A/B/U", "RG-83/U", "RG-88U", "RG-108/A/U", "RG-111/A/U", "RG-114/A/U", "RG-119/U", "RG-120/U", "RG-122/U", "RG-130/U", "RG-131/U", "RG-133/A/U", "RG-141/A/U", "RG-142/A/B/U", "RG-144/U", "RG-164/U", "RG-165/U", "RG-166/U", "RG-174/U", "RG-177/U", "RG-178/A/B/U", "RG-179/U", "RG-179A/B/U", "RG-180/U", "RG-180/A/B/U", "RG-210/U", "RG-211/A/U", "RG-212/U", "RG-213/U", "RG-214/U", "RG-215/U", "RG-216/U", "RG-217/U", "RG-218/U", "RG-219/U", "RG-223/U", "RG-302/U", "RG-303/U", "RG-304/U", "RG-307/A/U", "RG-316/U", "RG-391/U", "RG-392/U", "RG-393/U", "RG-400/U", "RG-401/U", "RG-402/U", "RG-403/U", "RG-405/U", "LMR-100", "LMR-195", "LMR-240", "LMR-400", "LMR-600"} // Sourced from: https://www.everythingrf.com/tech-resources/rf-cable-specifications
 float coaxTypesDiameters[93] = {0.226, 0.332, 0.328, 0.332, 0.332, 0.405, 0.403, 0.405, 0.242, 0.420, 0.420, 0.420, 0.463, 0.463, 0.405, 0.405, 0.463, 0.463, 0.870, 0.405, 0.405, 0.650, 0.708, 0.625, 0.630, 0.928, 0.928, 0.200, 0.195, 0.195, 0.195, 0.195, 0.242, 0.242, 0.242, 0.405, 0.405, 0.245, 0.436, 0.405, 0.515, 0.235, 0.478, 0.405, 0.465, 0.523, 0.160, 0.625, 0.683, 0.405, 0.190, 0.195, 0.410, 0.460, 0.110, 0.895, 0.072, 0.100, 0.100, 0.140, 0.140, 0.242, 0.730, 0.332, 0.405, 0.425, 0.463, 0.425, 0.545, 0.870, 0.928, 0.211, 0.201, 0.170, 0.280, 0.270, 0.102, 0.402, 0.475, 0.390, 0.195, 0.250, 0.141, 0.116, 0.086, 0.110, 0.195, 0.240, 0.400, 0.590} //Measured in Inches.
 float coaxTypeChoice = 0;
@@ -176,10 +176,10 @@ void setFreq() {
    }
 }
 
-void setCoax() {
+void setAWG() {
   while (digitalRead(setButtonPin) == LOW) {
    if (digitalRead(increaseButtonPin) == HIGH) {
-     wireAWG -= 1;
+      wireAWG -= 1;
      if (wireAWG < 1) {
        wireAWG = 30;
      }
@@ -193,15 +193,25 @@ void setCoax() {
      displayAWG();
      delay(100);
    }
-   wireDiameter = (chartOfAWG[wireAWG] / 1000)
-   lcd.clear();
-   lcd.setCursor(0, 0);
-   lcd.print("You've chosen AWG ");
-   lcd.print(wireAWG);
-   lcd.setCursor(0, 1);
-   lcd.print(wireDiameter);
-   lcd.print("'")
-   delay(500);
+}
+
+void setCoax() {
+  while (digitalRead(setButtonPin) == LOW) {
+   if (digitalRead(increaseButtonPin) == HIGH) {
+     coaxTypeChoice += 1;
+     if (coaxTypeChoice < 0) {
+       coaxTypeChoice = 93;
+     }
+     displayCoax();
+     delay(100);
+   } else if (digitalRead(decreaseButtonPin) == HIGH) {
+     coaxTypeChoice -= 1;
+     if (coaxTypeChoice > 93) {
+       coaxTypeChoice = 0;
+     }
+     displayCoax();
+     delay(100);
+   }
 }
 
 void setFreq() {
@@ -285,7 +295,8 @@ void magloopCalc() {
    delay(1);
  }
  if (digitalRead(increaseButtonPin) == HIGH) {
-     loopDiameter = wireDiameter;
+     setAwG();
+     conductorDiameter = wireDiameter;
    } else if (digitalRead(decreaseButtonPin) == HIGH) {
      lcd.clear();
      lcd.setCursor(0, 0);
@@ -307,4 +318,13 @@ void displayAWG() {
   lcd.setCursor(0, 0);
   lcd.print("AWG ");
   lcd.print(wireAWG);
+}
+
+void displayCoax() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print(coaxTypes[coaxTypeChoice]);
+  lcd.setCursor(0, 1);
+  lcd.print(coaxTypesDiameters[coaxTypeChoice]);
+  lcd.print("'");
 }
