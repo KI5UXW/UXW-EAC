@@ -6,9 +6,12 @@ int currentMenu = 1;
 //Universal Variables
 float chartOfAWG[30] = {324.9 ,289.3, 257.6, 229.4, 204.3, 181.9, 162, 144.3, 128.5, 114.4, 101.9, 90.7, 80.8, 72, 64.1, 57.1, 50.8, 45.3, 40.3, 35.9, 32, 28.5, 25.3, 22.6, 20.1, 17.9, 15.9, 14.2, 12.6, 11.3, 10}; //Added the AWG 1/10 as the value of 0 here in this array. Data from https://www.lapptannehill.com/resources/technical-information/solid-conductor-awg-dimensions-chart.
 float wireAWG = 30;
-float wireDiameter= (chartOfAWG[30] / 1000);
+float wireDiameter= (chartOfAWG[30] / 1000); //Measured in Inches.
+string coaxTypes[20] = {"RG-4/U", "RG-5/U", "RG-5A/B/U", "RG-6/U", "RG-6A/U", "RG-8/U", "9914/U", "RG-8A/U", "RG-8X/U", "RG-9/U", "RG-9A/U", "RG-9B/U", "RG-10/U", "RG-10A/U", "RG-11/U", "RG-11A/U", "RG-12/U", "RG-12A/U", "RG-17A/U", "RG-17A/U"} // Sourced from: https://www.everythingrf.com/tech-resources/rf-cable-specifications
+float coaxTypesDiameters[20] = {0.226, 0.332, 0.328, 0.332, 0.332, 0.405, 0.403, 0.405, 0.242, 0.420, 0.420, 0.420, 0.463, 0.463, 0.405, 0.405, 0.463, 0.463, 0.870, 0.405, 0.405, 0.650, 0.708, 0.625, 0.630, 0.928, 0.928, 0.200, 0.195, 0.195, 0.195, 0.195, 0.242, 0.242, 0.242, 0.405, 0.405, 0.245, 0.436, 0.405, 0.515, 0.235, 0.478, 0.405, 0.465, 0.523, 0.160, 0.625, 0.683, 0.405, 0.190, 0.195, 0.410, 0.460, 0.110, 0.895, 0.072, 0.100, 0.100, 0.140, 0.140, 0.242, 0.730, 0.332, 0.405, 0.425, 0.463, 0.425, 0.545, 0.870, 0.928, 0.211, 0.201, 0.170, 0.280, 0.270, 0.102, 0.402, 0.475, 0.390, 0.195, 0.250, 0.141, 0.116, 0.086} //Measured in Inches.
+float coaxTypeChoice = 0;
 float inputPower = 100; // Measured in Watts.
-float freqChoice = 14;
+float freqChoice = 14; // Measured in MHz.
 float antennaLength = 0;
 float universalCounter = 0;
 
@@ -172,7 +175,7 @@ void setFreq() {
    }
 }
 
-void setAWG() {
+void setCoax() {
   while (digitalRead(setButtonPin) == LOW) {
    if (digitalRead(increaseButtonPin) == HIGH) {
      wireAWG -= 1;
@@ -200,6 +203,25 @@ void setAWG() {
    delay(500);
 }
 
+void setFreq() {
+  while (digitalRead(setButtonPin) == LOW) {
+   if (digitalRead(increaseButtonPin) == HIGH) {
+     freqChoice += 0.1;
+     if (freqChoice > 54) {
+       freqChoice = 0.1;
+     }
+     displayFreq();
+     delay(100);
+   } else if (digitalRead(decreaseButtonPin) == HIGH) {
+     freqChoice -= 0.1;
+     if (freqChoice < 0.1) {
+       freqChoice = 54;
+     }
+     displayFreq();
+     delay(100);
+   }
+}
+
 void showLength() {
    lcd.clear();
    lcd.setCursor(0, 0);
@@ -218,7 +240,7 @@ void dipoleCalc() {
   delay(500);
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Enter");
+  lcd.print("Chosen Freq.");
   lcd.setCursor(0, 1);
   lcd.print("Frequency");
 
@@ -240,7 +262,35 @@ void dipoleCalc() {
 }
 
 void magloopCalc() {
-
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Magloop");
+  lcd.setCursor(0, 1);
+  lcd.print("Calculator");
+  delay(500);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Select Wire");
+  lcd.setCursor(0, 1);
+  lcd.print("Diameter");
+  delay(500);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("AWG: A ");
+  lcd.setCursor(0, 1);
+  lcd.print("Other: V");
+  while (digitalRead(increaseButtonPin) == LOW && digitalRead(decreaseButtonPin) == LOW {
+   // Wait for either button to be pressed
+   delay(1);
+ }
+ if (digitalRead(increaseButtonPin) == HIGH) {
+     loopDiameter = wireDiameter;
+   } else if (digitalRead(decreaseButtonPin) == HIGH) {
+     lcd.clear();
+     lcd.setCursor(0, 0);
+     lcd.print("Custom Diam.: A");
+     lcd.setCursor(0, 1);
+     lcd.print("Coax: V");
 }
 
 void displayFreq() {
