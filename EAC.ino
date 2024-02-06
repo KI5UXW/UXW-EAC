@@ -193,6 +193,7 @@ void setAWG() {
      displayAWG();
      delay(100);
    }
+   wireDiameter= (chartOfAWG[wireAWG] / 1000);
 }
 
 void setCoax() {
@@ -297,13 +298,38 @@ void magloopCalc() {
  if (digitalRead(increaseButtonPin) == HIGH) {
      setAwG();
      conductorDiameter = wireDiameter;
+     lcd.clear();
+     lcd.setCursor(0, 0);
+     lcd.print("Conductor Diam.:");
+     lcd.setCursor(0, 1);
+     lcd.print(conductorDiameter);
+     lcd.print('"');
    } else if (digitalRead(decreaseButtonPin) == HIGH) {
      lcd.clear();
      lcd.setCursor(0, 0);
      lcd.print("Custom Diam.: A");
      lcd.setCursor(0, 1);
      lcd.print("Coax: V");
-}
+     if (digitalRead(increaseButtonPin) == HIGH) {
+       setCoax();
+       conductorDiameter = coaxTypesDiameters[coaxTypeChoice];
+       lcd.clear();
+       lcd.setCursor(0, 0);
+       lcd.print("Conductor Diam.:");
+       lcd.setCursor(0, 1);
+       lcd.print(conductorDiameter);
+       lcd.print('"');
+     } else if (digitalRead(decreaseButtonPin) == HIGH) {
+       setCoax();
+       conductorDiameter = coaxTypesDiameters[coaxTypeChoice];
+       lcd.clear();
+       lcd.setCursor(0, 0);
+       lcd.print("Conductor Diam.:");
+       lcd.setCursor(0, 1);
+       lcd.print(conductorDiameter);
+       lcd.print('"');
+     }
+  }
 
 void displayFreq() {
   lcd.clear();
@@ -326,5 +352,5 @@ void displayCoax() {
   lcd.print(coaxTypes[coaxTypeChoice]);
   lcd.setCursor(0, 1);
   lcd.print(coaxTypesDiameters[coaxTypeChoice]);
-  lcd.print("'");
+  lcd.print('"');
 }
